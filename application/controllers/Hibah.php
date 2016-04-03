@@ -45,10 +45,35 @@ class Hibah extends CI_Controller {
   }
 
   public function new_group(){
-    $this->load->view('group/new');
+    $data['part_ofes'] = $this->group_model->get_part_ofes();
+    $data['activities'] = $this->group_model->get_activities();
+    $this->load->view('group/new', $data);
   }
 
   public function create_group(){
+    $this->group_form_validation();
+
+    if ($this->form_validation->run() === TRUE){
+      $record = array();
+      foreach(get_object_vars($this->group_model) as $k => $_){
+        if ($k == "registered_date"){
+           $temp_date = $this->input->post("group[$k][year]");
+           $temp_date = $temp_date.$this->input->post("group[$k][month]");
+           $temp_date = $temp_date.$this->input->post("group[$k][date]");
+           $record[$k] = $temp_date;
+        } else {
+          $record[$k] = $this->input->post("group[$k]");
+        }
+
+        // TODO: Dynamic membership list, encode to json
+      }
+      $this->group_model->insert($record);
+      $this->load->view('proposal/new');
+    } else {
+      $data['part_ofes'] = $this->group_model->get_part_ofes();
+      $data['activities'] = $this->group_model->get_activities();
+      $this->load->view('group/new', $data);
+    }
   }
 
   public function new_proposal(){
@@ -66,6 +91,7 @@ class Hibah extends CI_Controller {
 
   private function init_model(){
     $this->load->model('applicant_model');
+    $this->load->model('applicant_group_model', 'group_model');
   }
 
   private function applicant_form_validation(){
@@ -79,6 +105,22 @@ class Hibah extends CI_Controller {
     $this->form_validation->set_rules('applicant[address]', 'Alamat', 'required');
     $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'required');
   }
+
+  private function group_form_validation(){
+    $this->form_validation->set_rules('group[no_reg]', 'No. Registrasi', 'required|integer|is_unique[applicant_group.no_reg]');
+    $this->form_validation->set_rules('group[name]', 'Nama Kelompok', 'required');
+    $this->form_validation->set_rules('group[registered_date][year]', 'Tahun Terdaftar Kelompok', 'required');
+    $this->form_validation->set_rules('group[registered_date][month]', 'Bulan Terdaftar Kelompok', 'required');
+    $this->form_validation->set_rules('group[registered_date][date]', 'Tanggal Terdaftar Kelompok', 'required');
+    $this->form_validation->set_rules('group[address]', 'Alamat Kantor', 'required');
+    $this->form_validation->set_rules('group[part_of]', 'Bagian Grup', 'required');
+    $this->form_validation->set_rules('group[activity]', 'Kegiatan', 'required');
+    $this->form_validation->set_rules('group[membership]', 'Jumlah Anggota', 'required|integer');
+
+    //TODO: Dynamic membership_list, with array
+    $this->form_validation->set_rules('group[membership_list]', 'Daftar Anggota', 'required');
+  }
+
 
   private function set_error_messages(){
     $this->form_validation->set_message('required', "{field} wajib diisi");
