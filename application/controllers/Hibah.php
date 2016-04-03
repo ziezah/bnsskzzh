@@ -4,13 +4,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Hibah extends CI_Controller {
   public function __construct(){
     parent::__construct();
-    $this->load->model('applicant_model');
-
-    $this->load->helper('url_helper');
-    $this->load->helper('form');
-    $this->load->library('form_validation');
-
     $this->output->enable_profiler(TRUE);
+
+    $this->init_lib_and_helper();
+    $this->init_model();
+    $this->set_error_messages();
   }
 
   public function new_record(){
@@ -18,11 +16,12 @@ class Hibah extends CI_Controller {
   }
 
   public function new_applicant(){
-    $this->load->view('applicant/new');
+    $data['positions'] = $this->applicant_model->get_applicant_positions();
+    $this->load->view('applicant/new', $data);
   }
 
   public function create_applicant(){
-    $this->form_validation->set_rules('applicant[nik]', 'NIK', 'required');
+    $this->applicant_form_validation();
 
     if($this->form_validation->run() === TRUE){
       $record = array();
@@ -33,7 +32,8 @@ class Hibah extends CI_Controller {
       $this->applicant_model->insert($record);
       $this->load->view('group/new');
     } else {
-      $this->load->view('applicant/new');
+      $data['positions'] = $this->applicant_model->get_applicant_positions();
+      $this->load->view('applicant/new', $data);
     }
   }
 
@@ -49,5 +49,31 @@ class Hibah extends CI_Controller {
   }
 
   public function create_proposal(){
+  }
+
+  private function init_lib_and_helper(){
+    $this->load->helper('url_helper');
+    $this->load->helper('form');
+    $this->load->library('form_validation');
+  }
+
+  private function init_model(){
+    $this->load->model('applicant_model');
+  }
+
+  private function applicant_form_validation(){
+    $this->form_validation->set_rules('applicant[nik]', 'NIK', 'required');
+    $this->form_validation->set_rules('applicant[name]', 'Nama', 'required');
+    $this->form_validation->set_rules('applicant[job]', 'Pekerjaan', 'required');
+    $this->form_validation->set_rules('applicant[birth_place]', 'Tempat Lahir', 'required');
+    $this->form_validation->set_rules('applicant[birth_day]', 'Tanggal Lahir', 'required');
+    $this->form_validation->set_rules('applicant[address]', 'Alamat', 'required');
+    $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'required');
+
+    $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'integer');
+  }
+
+  private function set_error_messages(){
+    $this->form_validation->set_message('required', "{field} wajib diisi");
   }
 }

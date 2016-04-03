@@ -21,12 +21,8 @@
   <?= form_input("applicant[address]") ?>
 
   <?php
-  $options = array('Ketua' => 'Ketua',
-                   'Wakil Ketua' => 'Wakil Ketua',
-                   'Sekretaris' => 'Sekretaris',
-                   'Bendahara' => 'Bendahara',
-                   'Anggota' => 'Anggota',
-                   'Lain-lain' => 'Lain-Lain')
+  $options = array();
+  foreach($positions as $v){ $options[$v] = $v; }
   ?> 
   <?= form_label("Jabatan di Organisasi", "applicant[position]"); ?>
   <?= form_dropdown("applicant[position]", $options, "Ketua") ?>
