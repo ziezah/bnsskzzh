@@ -24,4 +24,15 @@ class Applicant_model extends CI_model {
   public function insert($record){
     return $this->db->insert('applicant', $record);
   }
+
+  public function get_applicant_positions(){
+    return array(
+      'Ketua',
+      'Wakil Ketua',
+      'Sekretaris',
+      'Bendahara',
+      'Anggota',
+      'Lain-lain'
+    );
+  }
 }
