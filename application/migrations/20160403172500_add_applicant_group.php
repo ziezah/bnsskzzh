@@ -10,7 +10,7 @@ class Migration_Add_group extends CI_Migration{
         'unsigned' => TRUE,
         'auto_increment' => TRUE,
       ),
-      'noreg' => array(
+      'no_reg' => array(
         'type' => 'INT',
         'constraint' => '16'
       ),
@@ -25,7 +25,11 @@ class Migration_Add_group extends CI_Migration{
         'type' => 'TEXT'
       ),
       'part_of' => array(
-        'type' => 'VARCHAR',
+        'type' => 'varchar',
+        'constraint' => '255'
+      ),
+      'activity' => array(
+        'type' => 'varchar',
         'constraint' => '255'
       ),
       'membership' => array(
@@ -38,10 +42,10 @@ class Migration_Add_group extends CI_Migration{
       ),
     ));
     $this->dbforge->add_key('id', TRUE);
-    $this->dbforge->create_table('group');
+    $this->dbforge->create_table('applicant_group');
   }
 
   public function down(){
-    $this->dbforg->drop_table('group');
+    $this->dbforg->drop_table('applicant_group');
   }
 }
