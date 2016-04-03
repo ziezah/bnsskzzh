@@ -23,10 +23,17 @@ class Hibah extends CI_Controller {
   public function create_applicant(){
     $this->applicant_form_validation();
 
-    if($this->form_validation->run() === TRUE){
+    if ($this->form_validation->run() === TRUE){
       $record = array();
       foreach(get_object_vars($this->applicant_model) as $k => $_){
-        $record[$k] = $this->input->post($k);
+        if ($k == "birth_day"){
+           $temp_date = $this->input->post("applicant[$k][year]");
+           $temp_date = $temp_date.$this->input->post("applicant[$k][month]");
+           $temp_date = $temp_date.$this->input->post("applicant[$k][date]");
+           $record[$k] = $temp_date;
+        } else {
+          $record[$k] = $this->input->post("applicant[$k]");
+        }
       }
 
       $this->applicant_model->insert($record);
@@ -62,18 +69,20 @@ class Hibah extends CI_Controller {
   }
 
   private function applicant_form_validation(){
-    $this->form_validation->set_rules('applicant[nik]', 'NIK', 'required');
+    $this->form_validation->set_rules('applicant[nik]', 'NIK', 'required|integer|is_unique[applicant.nik]');
     $this->form_validation->set_rules('applicant[name]', 'Nama', 'required');
     $this->form_validation->set_rules('applicant[job]', 'Pekerjaan', 'required');
     $this->form_validation->set_rules('applicant[birth_place]', 'Tempat Lahir', 'required');
-    $this->form_validation->set_rules('applicant[birth_day]', 'Tanggal Lahir', 'required');
+    $this->form_validation->set_rules('applicant[birth_day][year]', 'Tahun Lahir', 'required|integer');
+    $this->form_validation->set_rules('applicant[birth_day][month]', 'Bulan Lahir', 'required|integer');
+    $this->form_validation->set_rules('applicant[birth_day][date]', 'Tanggal Lahir', 'required|integer');
     $this->form_validation->set_rules('applicant[address]', 'Alamat', 'required');
     $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'required');
-
-    $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'integer');
   }
 
   private function set_error_messages(){
     $this->form_validation->set_message('required', "{field} wajib diisi");
+    $this->form_validation->set_message('integer', "{field} hanya boleh diisi dengan angka");
+    $this->form_validation->set_message('is_unique', "{field} sudah pernah diinput");
   }
 }
