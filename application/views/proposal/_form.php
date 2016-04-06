@@ -2,6 +2,13 @@
 
 <div class="row">
 <div class="col-sm-6">
+
+<?php if(validation_errors() != false): ?>
+  <div class="alert alert-danger">
+    <?= validation_errors(); ?>
+  </div>
+<?php endif; ?>
+
 <?= form_open('/proposal/create_proposal'); ?>
   <div class="form-group">
     <?= form_label("Tujuan Penggunaan Hibah", "proposal[purpose]"); ?>

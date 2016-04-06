@@ -2,7 +2,13 @@
 
 <div class="row">
 <div class="col-sm-6">
-<?= validation_errors(); ?>
+
+<?php if(validation_errors() != false): ?>
+  <div class="alert alert-danger">
+    <?= validation_errors(); ?>
+  </div>
+<?php endif; ?>
+
 <?= form_open('/hibah/create_applicant'); ?>
   <div class="form-group">
     <?= form_label("NIK", "applicant[nik]"); ?>
