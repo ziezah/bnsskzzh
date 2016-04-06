@@ -6,5 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $title ?></title>
 
+    <link href="<?= asset_url(); ?>css/bootstrap.min.css" rel="stylesheet">
   <body>
+    <div class="container">
     <h1><?= $heading; ?></h1>
