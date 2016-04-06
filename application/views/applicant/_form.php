@@ -28,13 +28,13 @@
     <?= form_label("Tanggal Lahir", "applicant[birth_day]"); ?>
     <div class="row">
       <div class="col-md-4">
-      <?= form_input("applicant[birth_day][date]", set_value('applicant[birth_day][date]'), $general_attr); ?>
+        <?= form_input("applicant[birth_day][date]", set_value('applicant[birth_day][date]'), $general_attr); ?>
       </div>
       <div class="col-md-4">
-      <?= form_input("applicant[birth_day][month]", set_value('applicant[birth_day][month]'), $general_attr); ?>
+        <?= form_input("applicant[birth_day][month]", set_value('applicant[birth_day][month]'), $general_attr); ?>
       </div>
       <div class="col-md-4">
-      <?= form_input("applicant[birth_day][year]", set_value('applicant[birth_day][year]'), $general_attr); ?>
+        <?= form_input("applicant[birth_day][year]", set_value('applicant[birth_day][year]'), $general_attr); ?>
       </div>
     </div>
   </div>
@@ -53,7 +53,10 @@
     <?= form_dropdown("applicant[position]", $options, set_value('applicant[position]'), $general_attr); ?>
   </div>
 
-  <?= form_submit("submit", "Submit", array('class' => 'btn btn-default')); ?>
+  <div class="form-group">
+    <?= form_submit("submit", "Submit", array('class' => 'btn btn-primary')); ?>
+    <?= anchor('', 'Kembali', array('class' => 'btn btn-default')); ?>
+  </div>
 <?= form_close(); ?>
 </div> <!-- column -->
 </div> <!-- row -->
