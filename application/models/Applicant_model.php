@@ -1,7 +1,5 @@
 <?php
 class Applicant_model extends CI_model {
-  public $id;
-
   public $nik;
   public $name;
   public $job;

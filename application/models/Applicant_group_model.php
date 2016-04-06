@@ -1,7 +1,5 @@
 <?php
 class Applicant_group_model extends CI_model {
-  public $id;
-
   public $no_reg;
   public $name;
   public $registered_date;
