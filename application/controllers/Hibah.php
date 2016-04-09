@@ -12,21 +12,41 @@ class Hibah extends CI_Controller {
   }
 
   public function index(){
-    redirect('/hibah/new_applicant');
+    # TODO: Front Page of Hibah?
+    $this->new_record();
   }
 
   public function new_record(){
-    $this->new_applicant();
+    switch($this->get_applicant_status()){
+    case 'completely_new':
+      redirect('/hibah/new_applicant');
+      break;
+    case 'applicant_created':
+      redirect('/hibah/new_group');
+      break;
+    case 'group_created':
+      redirect('/hibah/new_proposal');
+      break;
+    default:
+      redirect('/hibah/new_proposal');
+    }
   }
 
   public function new_applicant(){
-    $data['positions'] = $this->applicant_model->get_applicant_positions();
+    if($this->get_applicant_status() !== 'completely_new'){
+      $this->new_record();
+    }
+
+    $data = $this->prepare_new_applicant();
     $this->load->view('applicant/new', $data);
   }
 
   public function create_applicant(){
-    $this->applicant_form_validation();
+    if($this->get_applicant_status() !== 'completely_new'){
+      $this->new_record();
+    }
 
+    $this->applicant_form_validation();
     if ($this->form_validation->run() === TRUE){
       $record = array();
       foreach(get_object_vars($this->applicant_model) as $k => $_){
@@ -40,21 +60,30 @@ class Hibah extends CI_Controller {
         }
       }
 
-      $this->applicant_model->insert($record);
+      $applicant_id = $this->applicant_model->insert($record);
+      $random_number = $this->applicant_cookie_model->create_cookie_id($applicant_id);
+      $this->session->set_userdata('app_cookie_id', $random_number);
+
       redirect('/hibah/new_group');
     } else {
-      $data['positions'] = $this->applicant_model->get_applicant_positions();
+      $data = $this->prepare_new_applicant();
       $this->load->view('applicant/new', $data);
     }
   }
 
   public function new_group(){
-    $data['part_ofes'] = $this->group_model->get_part_ofes();
-    $data['activities'] = $this->group_model->get_activities();
+    if($this->get_applicant_status() !== 'applicant_created'){
+      $this->new_record();
+    }
+
+    $data = $this->prepare_new_group();
     $this->load->view('group/new', $data);
   }
 
   public function create_group(){
+    if($this->get_applicant_status() !== 'applicant_created'){
+      $this->new_record();
+    }
     $this->group_form_validation();
 
     if ($this->form_validation->run() === TRUE){
@@ -68,23 +97,31 @@ class Hibah extends CI_Controller {
         } else {
           $record[$k] = $this->input->post("group[$k]");
         }
-
         // TODO: Dynamic membership list, encode to json
       }
+      $record['applicant_id'] = $this->applicant_cookie_model->get_applicant_id($this->session->userdata('app_cookie_id'));
       $this->group_model->insert($record);
       redirect('/hibah/new_proposal');
     } else {
-      $data['part_ofes'] = $this->group_model->get_part_ofes();
-      $data['activities'] = $this->group_model->get_activities();
+      $data = $this->prepare_new_group();
       $this->load->view('group/new', $data);
     }
   }
 
   public function new_proposal(){
-    $this->load->view('proposal/new');
+    if($this->get_applicant_status() !== 'group_created'){
+      $this->new_record();
+    }
+
+    $data = $this->prepare_new_proposal();
+    $this->load->view('proposal/new', $data);
   }
 
   public function create_proposal(){
+    if($this->get_applicant_status() !== 'group_created'){
+      $this->new_record();
+    }
+
     $this->proposal_form_validation();
 
     if ($this->form_validation->run() === TRUE){
@@ -94,22 +131,29 @@ class Hibah extends CI_Controller {
 
         // TODO: Dynamic needs list, encode to json
       }
+      $record['applicant_id'] = $this->applicant_cookie_model->get_applicant_id($this->session->userdata('app_cookie_id'));
       $this->proposal_model->insert($record);
       redirect('/hibah/registration_success');
     } else {
-      $this->load->view('proposal/new');
+      $data = $this->prepare_new_proposal();
+      $this->load->view('proposal/new', $data);
     }
   }
 
   private function init_lib_and_helper(){
     $this->load->helper('url_helper');
     $this->load->helper('form');
+    $this->load->helper('cookie');
     $this->load->library('form_validation');
+    $this->load->library('session');
   }
 
   private function init_model(){
+    $this->load->model('applicant_cookie_model');
+
     $this->load->model('applicant_model');
     $this->load->model('applicant_group_model', 'group_model');
+    $this->load->model('proposal_model');
   }
 
   private function applicant_form_validation(){
@@ -164,5 +208,48 @@ class Hibah extends CI_Controller {
       $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
       return FALSE;
     }
+  }
+
+  private function get_applicant_from_session_id(){
+    $cookie_id = $this->session->userdata('app_cookie_id');
+    $applicant_id = $this->applicant_cookie_model->get_applicant_id($cookie_id);
+    return $this->applicant_model->find($applicant_id);
+  }
+
+  private function get_applicant_status(){
+     $applicant = $this->get_applicant_from_session_id();
+     if(empty($applicant)){
+       return 'completely_new';
+     } else {
+       $group = $this->group_model->find_by_applicant_id($applicant->id);
+       if(empty($group)){
+         return 'applicant_created';
+       } else {
+         $proposal = $this->proposal_model->find_by_applicant_id($applicant->id);
+         if(empty($proposal)){
+           return 'group_created';
+         } else {
+           return 'proposal_created';
+         }
+       }
+     }
+  }
+
+  private function prepare_new_applicant(){
+    $data['positions'] = $this->applicant_model->get_applicant_positions();
+    return $data;
+  }
+
+  private function prepare_new_group(){
+    $data['applicant'] = $this->get_applicant_from_session_id();
+    $data['part_ofes'] = $this->group_model->get_part_ofes();
+    $data['activities'] = $this->group_model->get_activities();
+    return $data;
+  }
+
+  private function prepare_new_proposal(){
+    $data['applicant'] = $this->get_applicant_from_session_id();
+    $data['group'] = $this->group_model->find_by_applicant_id($data['applicant']->id);
+    return $data;
   }
 }

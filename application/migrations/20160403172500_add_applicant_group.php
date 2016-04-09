@@ -40,6 +40,10 @@ class Migration_Add_group extends CI_Migration{
         'type' => 'TEXT',
         'null' => TRUE
       ),
+      'applicant_id' => array(
+        'type' => 'INT',
+        'constraint' => '16'
+      ),
     ));
     $this->dbforge->add_key('id', TRUE);
     $this->dbforge->create_table('applicant_group');

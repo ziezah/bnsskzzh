@@ -9,6 +9,11 @@
   </div>
 <?php endif; ?>
 
+<div class="applicant-data">
+  Nama Pendaftar: <?= $applicant->name; ?> <br >
+  Nama Group: <?= $group->name; ?>
+</div>
+
 <?= form_open('/hibah/create_proposal'); ?>
   <div class="form-group">
     <?= form_label("Tujuan Penggunaan Hibah", "proposal[purpose]"); ?>

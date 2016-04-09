@@ -9,6 +9,10 @@
   </div>
 <?php endif; ?>
 
+<div class="applicant-data">
+  Nama Pendaftar: <?= $applicant->name;?>
+</div>
+
 <?= form_open('/hibah/create_group'); ?>
   <div class="form-group">
     <?= form_label("No. Registrasi Kelompok", "group[no_reg]"); ?>

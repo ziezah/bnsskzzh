@@ -20,7 +20,13 @@ class Applicant_model extends CI_model {
   }
 
   public function insert($record){
-    return $this->db->insert('applicant', $record);
+    $this->db->insert('applicant', $record);
+    return $this->db->insert_id();
+  }
+
+  public function find($id){
+    $query = $this->db->get_where('applicant', array('id' => $id));
+    return $query->row();
   }
 
   public function get_applicant_positions(){
