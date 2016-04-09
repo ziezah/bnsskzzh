@@ -1,4 +1,5 @@
 <?php
+// Cannot give name Group_model
 class Applicant_group_model extends CI_model {
   public $no_reg;
   public $name;
@@ -17,6 +18,7 @@ class Applicant_group_model extends CI_model {
 
   public function insert($record){
     return $this->db->insert('applicant_group', $record);
+    return $this->db->insert_id();
   }
 
   public function find_by_applicant_id($applicant_id){

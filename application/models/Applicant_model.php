@@ -29,6 +29,12 @@ class Applicant_model extends CI_model {
     return $query->row();
   }
 
+  public function update_group_id($id, $group_id){
+    $this->db->set('group_id', $group_id);
+    $this->db->where('id', $id);
+    $this->db->update('applicant');
+  }
+
   public function get_applicant_positions(){
     return array(
       'Ketua',

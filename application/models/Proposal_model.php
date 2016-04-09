@@ -14,7 +14,7 @@ class Proposal_model extends CI_model {
   }
 
   public function insert($record){
-    return $this->db->insert('applicant_group', $record);
+    return $this->db->insert('proposal', $record);
   }
 
   public function find_by_applicant_id($applicant_id){

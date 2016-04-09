@@ -3,13 +3,19 @@
 <div class="row">
 <div class="col-sm-6">
 
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%;">
+    <span class="sr-only">70% Complete</span>
+  </div>
+</div>
+
 <?php if(validation_errors() != false): ?>
   <div class="alert alert-danger">
     <?= validation_errors(); ?>
   </div>
 <?php endif; ?>
 
-<div class="applicant-data">
+<div class="well applicant-data">
   Nama Pendaftar: <?= $applicant->name; ?> <br >
   Nama Group: <?= $group->name; ?>
 </div>
@@ -21,13 +27,13 @@
   </div>
 
   <div class="form-group">
-    <?= form_label("Jumlah yang Dibutuhkan", "proposal[needed_amount]"); ?>
+    <?= form_label("Jumlah Dana yang Dibutuhkan", "proposal[needed_amount]"); ?>
     <?= form_input("proposal[needed_amount]", set_value("proposal[needed_amount]"), $general_attr) ?>
   </div>
 
   <div class="form-group">
-    <?= form_label("List semua kebutuhan", "proposal[needs][0]"); ?>
-    <?= form_input("proposal[needs][0]", set_value("proposal[needs][0]"), $general_attr) ?>
+    <?= form_label("List semua kebutuhan (dengan rincian jumlah)", "proposal[needs]"); ?>
+    <?= form_textarea("proposal[needs]", set_value("proposal[needs]"), $general_attr) ?>
   </div>
 
   <div class="form-group">

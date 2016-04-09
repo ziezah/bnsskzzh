@@ -6,3 +6,5 @@ $data['activities'] = $activities;
 $data['applicant'] = $applicant;
 $this->load->view('templates/header', $data);
 $this->load->view('group/_form');
+$this->load->view('templates/footer', $data);
+
