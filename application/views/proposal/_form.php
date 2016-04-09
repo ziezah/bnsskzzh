@@ -9,7 +9,7 @@
   </div>
 <?php endif; ?>
 
-<?= form_open('/proposal/create_proposal'); ?>
+<?= form_open('/hibah/create_proposal'); ?>
   <div class="form-group">
     <?= form_label("Tujuan Penggunaan Hibah", "proposal[purpose]"); ?>
     <?= form_textarea("proposal[purpose]", set_value("proposal[purpose]"), $general_attr) ?>
@@ -21,9 +21,8 @@
   </div>
 
   <div class="form-group">
-    <?= form_fieldset("List Semua Kebutuhan") ?>
-      <?= form_input("proposal[needs][0]", set_value("proposal[needs][0]"), $general_attr) ?>
-    <?= form_fieldset_close() ?>
+    <?= form_label("List semua kebutuhan", "proposal[needs][0]"); ?>
+    <?= form_input("proposal[needs][0]", set_value("proposal[needs][0]"), $general_attr) ?>
   </div>
 
   <div class="form-group">
@@ -42,9 +41,13 @@ untuk mengembalikan dana hibah tersebut ke pemerintahan daerah dan bersedia
 dituntut sesuai dengan hukum yang berlaku.";
   ?>
 
-  <div class="form-group">
-    <?= form_checkbox("proposal[agreement]", '1', $general_attr) ?><?= $agreement ?>
-  </div>
+  <?= form_fieldset("Pernyataan") ?>
+    <div class="checkbox">
+      <label>
+        <?= form_checkbox("proposal[agreement]", '1', FALSE, array('type' => 'checkbox')) ?><?= $agreement ?>
+      </label>
+    </div>
+  <?= form_fieldset_close() ?>
 
    <div class="form-group">
     <?= form_submit("submit", "Submit", array('class' => 'btn btn-primary')) ?>

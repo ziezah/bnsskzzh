@@ -65,10 +65,8 @@
 
   <?php //TODO: Dynamic membership_list ?>
   <div class="form-group">
-  <?= form_fieldset("List Semua Anggota") ?>
-    <?= form_label("List Semua Anggota", "group[membership_list]"); ?>
-    <?= form_input("group[membership_list]", set_value("group[membership_list]"), $general_attr) ?>
-  <?= form_fieldset_close() ?>
+  <?= form_label("List Semua Anggota", "group[membership_list]"); ?>
+  <?= form_input("group[membership_list]", set_value("group[membership_list]"), $general_attr) ?>
   </div>
 
   <div class="form-group">

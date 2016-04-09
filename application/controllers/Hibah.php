@@ -11,6 +11,10 @@ class Hibah extends CI_Controller {
     $this->set_error_messages();
   }
 
+  public function index(){
+    redirect('/hibah/new_applicant');
+  }
+
   public function new_record(){
     $this->new_applicant();
   }
@@ -37,7 +41,7 @@ class Hibah extends CI_Controller {
       }
 
       $this->applicant_model->insert($record);
-      $this->load->view('group/new');
+      redirect('/hibah/new_group');
     } else {
       $data['positions'] = $this->applicant_model->get_applicant_positions();
       $this->load->view('applicant/new', $data);
@@ -68,7 +72,7 @@ class Hibah extends CI_Controller {
         // TODO: Dynamic membership list, encode to json
       }
       $this->group_model->insert($record);
-      $this->load->view('proposal/new');
+      redirect('/hibah/new_proposal');
     } else {
       $data['part_ofes'] = $this->group_model->get_part_ofes();
       $data['activities'] = $this->group_model->get_activities();
@@ -81,6 +85,20 @@ class Hibah extends CI_Controller {
   }
 
   public function create_proposal(){
+    $this->proposal_form_validation();
+
+    if ($this->form_validation->run() === TRUE){
+      $record = array();
+      foreach(get_object_vars($this->group_model) as $k => $_){
+        $record[$k] = $this->input->post("group[$k]");
+
+        // TODO: Dynamic needs list, encode to json
+      }
+      $this->proposal_model->insert($record);
+      redirect('/hibah/registration_success');
+    } else {
+      $this->load->view('proposal/new');
+    }
   }
 
   private function init_lib_and_helper(){
@@ -121,10 +139,30 @@ class Hibah extends CI_Controller {
     $this->form_validation->set_rules('group[membership_list]', 'Daftar Anggota', 'required');
   }
 
+  private function proposal_form_validation(){
+    $this->form_validation->set_rules('proposal[purpose]', 'Tujuan penggunaan hibah', 'required');
+    $this->form_validation->set_rules('proposal[needed_amount]', 'Jumlah yang dibutuhkan', 'required|integer');
+
+    # TODO: Dynamic needed list
+    # TODO: sum of needed list must equal needed amount
+    $this->form_validation->set_rules('proposal[needs][0]', 'List Semua Kebutuhan', 'required');
+
+    $this->form_validation->set_rules('proposal[pic]', 'Penanggung Jawab Proposal', 'required');
+    $this->form_validation->set_rules('proposal[aggreement]', 'Pernyataan', 'callback_agreed_tnc');
+  }
 
   private function set_error_messages(){
     $this->form_validation->set_message('required', "{field} wajib diisi");
     $this->form_validation->set_message('integer', "{field} hanya boleh diisi dengan angka");
     $this->form_validation->set_message('is_unique', "{field} sudah pernah diinput");
+  }
+
+  public function agreed_tnc($str){
+    if($str == 1){
+      return TRUE;
+    } else {
+      $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
+      return FALSE;
+    }
   }
 }

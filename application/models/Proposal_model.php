@@ -12,5 +12,9 @@ class Proposal_model extends CI_model {
   public function __construct(){
     $this->load->database();
   }
+
+  public function insert($record){
+    return $this->db->insert('applicant_group', $record);
+  }
 }
 
