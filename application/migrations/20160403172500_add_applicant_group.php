@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('Please go out of here');
 
-class Migration_Add_group extends CI_Migration{
+class Migration_Add_applicant_group extends CI_Migration{
   public function up(){
     $this->dbforge->add_field(array(
       'id' => array(

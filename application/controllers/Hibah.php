@@ -50,14 +50,7 @@ class Hibah extends CI_Controller {
     if ($this->form_validation->run() === TRUE){
       $record = array();
       foreach(get_object_vars($this->applicant_model) as $k => $_){
-        if ($k == "birth_day"){
-           $temp_date = $this->input->post("applicant[$k][year]");
-           $temp_date = $temp_date.$this->input->post("applicant[$k][month]");
-           $temp_date = $temp_date.$this->input->post("applicant[$k][date]");
-           $record[$k] = $temp_date;
-        } else {
-          $record[$k] = $this->input->post("applicant[$k]");
-        }
+        $record[$k] = $this->input->post("applicant[$k]");
       }
       $applicant_id = $this->applicant_model->insert($record);
       $random_number = $this->applicant_cookie_model->create_cookie_id($applicant_id);
@@ -88,14 +81,7 @@ class Hibah extends CI_Controller {
     if ($this->form_validation->run() === TRUE){
       $record = array();
       foreach(get_object_vars($this->group_model) as $k => $_){
-        if ($k == "registered_date"){
-           $temp_date = $this->input->post("group[$k][year]");
-           $temp_date = $temp_date.$this->input->post("group[$k][month]");
-           $temp_date = $temp_date.$this->input->post("group[$k][date]");
-           $record[$k] = $temp_date;
-        } else {
-          $record[$k] = $this->input->post("group[$k]");
-        }
+        $record[$k] = $this->input->post("group[$k]");
         // TODO: Dynamic membership list, encode to json
       }
       $applicant_id = $this->applicant_cookie_model->get_applicant_id($this->session->userdata('app_cookie_id'));
@@ -169,9 +155,7 @@ class Hibah extends CI_Controller {
     $this->form_validation->set_rules('applicant[name]', 'Nama', 'required|min_length[3]');
     $this->form_validation->set_rules('applicant[job]', 'Pekerjaan', 'required');
     $this->form_validation->set_rules('applicant[birth_place]', 'Tempat Lahir', 'required');
-    $this->form_validation->set_rules('applicant[birth_day][year]', 'Tahun Lahir', 'required|integer');
-    $this->form_validation->set_rules('applicant[birth_day][month]', 'Bulan Lahir', 'required|integer');
-    $this->form_validation->set_rules('applicant[birth_day][date]', 'Tanggal Lahir', 'required|integer');
+    $this->form_validation->set_rules('applicant[birth_day]', 'Tanggal Lahir', 'required|callback_check_date_format');
     $this->form_validation->set_rules('applicant[address]', 'Alamat', 'required');
     $this->form_validation->set_rules('applicant[position]', 'Jabatan di Organisasi', 'required');
   }
@@ -179,9 +163,7 @@ class Hibah extends CI_Controller {
   private function group_form_validation(){
     $this->form_validation->set_rules('group[no_reg]', 'No. Registrasi', 'required|integer|is_unique[applicant_group.no_reg]');
     $this->form_validation->set_rules('group[name]', 'Nama Kelompok', 'required');
-    $this->form_validation->set_rules('group[registered_date][year]', 'Tahun Terdaftar Kelompok', 'required');
-    $this->form_validation->set_rules('group[registered_date][month]', 'Bulan Terdaftar Kelompok', 'required');
-    $this->form_validation->set_rules('group[registered_date][date]', 'Tanggal Terdaftar Kelompok', 'required');
+    $this->form_validation->set_rules('group[registered_date]', 'Tahun Terdaftar Kelompok', 'required|callback_check_date_format');
     $this->form_validation->set_rules('group[address]', 'Alamat Kantor', 'required|min_length[10]');
     $this->form_validation->set_rules('group[part_of]', 'Bagian Grup', 'required');
     $this->form_validation->set_rules('group[activity]', 'Kegiatan', 'required');
@@ -204,15 +186,6 @@ class Hibah extends CI_Controller {
     $this->form_validation->set_message('integer', "{field} hanya boleh diisi dengan angka");
     $this->form_validation->set_message('is_unique', "{field} sudah pernah diinput");
     $this->form_validation->set_message('min_length', "{field} harus berisi minimal {param} karakter.");
-  }
-
-  public function agreed_tnc($str){
-    if($str == 1){
-      return TRUE;
-    } else {
-      $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
-      return FALSE;
-    }
   }
 
   private function get_applicant_from_session_id(){
@@ -257,4 +230,19 @@ class Hibah extends CI_Controller {
     $data['group'] = $this->group_model->find_by_applicant_id($data['applicant']->id);
     return $data;
   }
+
+  public function check_date_format($date){
+    // TODO: NOT YET IMPLEMENTED
+    return true;
+  }
+
+  public function agreed_tnc($str){
+    if($str == 1){
+      return TRUE;
+    } else {
+      $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
+      return FALSE;
+    }
+  }
 }
+

@@ -1,4 +1,9 @@
-<?php $general_attr = array('class' => 'form-control'); ?>
+<?php 
+$general_attr = array('class' => 'form-control'); 
+$date_picker_attr = $general_attr; 
+$date_picker_attr['class'] .=  ' date-picker' ; 
+$date_picker_attr['placeholder'] =  'mm/dd/yyyy' ;
+?>
 
 <div class="row">
 <div class="col-sm-6">
@@ -33,17 +38,7 @@
 
   <div class="form-group">
     <?= form_label("Tanggal Terdaftar", "group[registered_date]"); ?>
-    <div class="row">
-      <div class="col-md-4">
-      <?= form_input("group[registered_date][date]", set_value("group[registered_date][date]"), $general_attr); ?>
-      </div>
-      <div class="col-md-4">
-        <?= form_input("group[registered_date][month]", set_value("group[registered_date][month]"), $general_attr); ?>
-      </div>
-      <div class="col-md-4">
-        <?= form_input("group[registered_date][year]", set_value("group[registered_date][year]"), $general_attr); ?>
-      </div>
-    </div>
+    <?= form_input("group[registered_date]", set_value("group[registered_date]"), $date_picker_attr); ?>
   </div>
 
   <div class="form-group">
