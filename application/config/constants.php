@@ -83,3 +83,8 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+defined('PROPOSAL_UNPROCESSED') OR define('PROPOSAL_UNPROCESSED', 0); // proposal not yet processed
+defined('PROPOSAL_APPROVED')    OR define('PROPOSAL_APPROVED', 1); // proposal approved
+defined('PROPOSAL_REJECTED')    OR define('PROPOSAL_REJECTED', 2); // proposal rejected
+

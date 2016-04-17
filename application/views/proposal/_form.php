@@ -20,7 +20,7 @@
   Nama Group: <?= $group->name; ?>
 </div>
 
-<?= form_open('/hibah/create_proposal'); ?>
+<?= form_open_multipart('/hibah/create_proposal'); ?>
   <div class="form-group">
     <?= form_label("Tujuan Penggunaan Hibah", "proposal[purpose]"); ?>
     <?= form_textarea("proposal[purpose]", set_value("proposal[purpose]"), $general_attr) ?>
@@ -32,8 +32,8 @@
   </div>
 
   <div class="form-group">
-    <?= form_label("List semua kebutuhan (dengan rincian jumlah)", "proposal[needs]"); ?>
-    <?= form_textarea("proposal[needs]", set_value("proposal[needs]"), $general_attr) ?>
+    <?= form_label("File PDF Berisi Daftar Kebutuhan", "needs"); ?>
+    <?= form_upload("needs", set_value("needs")) ?>
   </div>
 
   <div class="form-group">

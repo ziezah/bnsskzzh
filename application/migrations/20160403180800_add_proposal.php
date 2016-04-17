@@ -22,12 +22,22 @@ class Migration_Add_proposal extends CI_Migration{
         'type' => 'INT',
         'constraint' => '16'
       ),
-      'needs' => array(
+      'file_link' => array(
         'type' => 'TEXT'
       ),
       'pic' => array(
         'type' => 'VARCHAR',
         'constraint' => 255
+      ),
+      'approved' => array(
+        'type' => 'INT',
+        'constraint' => 1,
+        'default' => 0
+      ),
+      'processed_by' => array(
+        'type' => 'INT',
+        'constraint' => '16',
+        'null' => TRUE
       ),
       'applicant_id' => array(
         'type' => 'INT',

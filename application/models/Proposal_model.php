@@ -3,8 +3,10 @@ class Proposal_model extends CI_model {
   public $title;
   public $purpose;
   public $needed_amount;
-  public $needs;
+  public $file_link;
   public $pic;
+  public $approved; 
+  public $processed_by; // admin id who processed this proposal to approved or rejected
 
   // belongs to applicant
   public $applicant_id;
