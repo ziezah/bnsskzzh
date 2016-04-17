@@ -32,17 +32,25 @@ class Migration_Add_applicant_group extends CI_Migration{
         'type' => 'varchar',
         'constraint' => '255'
       ),
+      'chairman_nik' => array(
+        'type' => 'INT',
+        'constraint' => '10'
+      ),
+      'secretary_nik' => array(
+        'type' => 'INT',
+        'constraint' => '10'
+      ),
+      'finance_manager_nik' => array(
+        'type' => 'INT',
+        'constraint' => '10'
+      ),
       'membership' => array(
         'type' => 'INT',
-        'constraint' => '16'
-      ),
-      'membership_list' => array(
-        'type' => 'TEXT',
-        'null' => TRUE
+        'constraint' => '3'
       ),
       'applicant_id' => array(
         'type' => 'INT',
-        'constraint' => '16'
+        'constraint' => '10'
       ),
     ));
     $this->dbforge->add_key('id', TRUE);

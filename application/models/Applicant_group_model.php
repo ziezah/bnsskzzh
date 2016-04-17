@@ -8,7 +8,9 @@ class Applicant_group_model extends CI_model {
   public $part_of;
   public $activity;
   public $membership;
-  public $membership_list;
+  public $chairman_nik;
+  public $secretary_nik;
+  public $finance_manager_nik;
 
   public $applicant_id;
 

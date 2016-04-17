@@ -69,10 +69,19 @@ $date_picker_attr['placeholder'] =  'mm/dd/yyyy' ;
     <?= form_input("group[membership]", set_value("group[membership]"), $general_attr) ?>
   </div>
 
-  <?php //TODO: Dynamic membership_list ?>
   <div class="form-group">
-  <?= form_label("List Semua Anggota", "group[membership_list]"); ?>
-  <?= form_input("group[membership_list]", set_value("group[membership_list]"), $general_attr) ?>
+    <?= form_label("NIK Ketua Kelompok", "group[chairman_nik]"); ?>
+    <?= form_input("group[chairman_nik]", set_value("group[chairman_nik]"), $general_attr) ?>
+  </div>
+
+  <div class="form-group">
+    <?= form_label("NIK Sekretaris Kelompok", "group[secretary_nik]"); ?>
+    <?= form_input("group[secretary_nik]", set_value("group[secretary_nik]"), $general_attr) ?>
+  </div>
+
+  <div class="form-group">
+    <?= form_label("NIK Bendahara Kelompok", "group[finance_manager_nik]"); ?>
+    <?= form_input("group[finance_manager_nik]", set_value("group[finance_manager_nik]"), $general_attr) ?>
   </div>
 
   <div class="form-group">
