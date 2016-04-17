@@ -22,7 +22,7 @@ $date_picker_attr['placeholder'] =  'mm/dd/yyyy' ;
 <?php endif; ?>
 
 <div class="well applicant-data">
-  Nama Pendaftar: <?= $applicant->name;?>
+  Nama Pendaftar: <?= $applicant['name'];?>
 </div>
 
 <?= form_open('/hibah/create_group'); ?>

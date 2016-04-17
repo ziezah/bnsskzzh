@@ -16,8 +16,8 @@
 <?php endif; ?>
 
 <div class="well applicant-data">
-  Nama Pendaftar: <?= $applicant->name; ?> <br >
-  Nama Group: <?= $group->name; ?>
+  Nama Pendaftar: <?= $applicant['name']; ?> <br >
+  Nama Group: <?= $group['name']; ?>
 </div>
 
 <?= form_open_multipart('/hibah/create_proposal'); ?>

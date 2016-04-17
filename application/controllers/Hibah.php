@@ -33,30 +33,24 @@ class Hibah extends CI_Controller {
   }
 
   private function new_applicant(){
-    if($this->get_applicant_status() !== 'completely_new'){
+    if($this->get_applicant_status() !== 'completely_new')
       return $this->new_record();
-    }
 
     $data = $this->prepare_new_applicant();
     $this->load->view('applicant/new', $data);
   }
 
   public function create_applicant(){
-    if($this->get_applicant_status() !== 'completely_new'){
+    if($this->get_applicant_status() !== 'completely_new')
       return $this->new_record();
-    }
 
     $this->applicant_form_validation();
     if ($this->form_validation->run() === TRUE){
       $record = array();
-      foreach(get_object_vars($this->applicant_model) as $k => $_){
+      foreach(get_object_vars($this->applicant_model) as $k => $_)
         $record[$k] = $this->input->post("applicant[$k]");
-      }
-      // TODO: Save it in session first, only save in database when all of the record finished.
-      $applicant_id = $this->applicant_model->insert($record);
-      $random_number = $this->applicant_cookie_model->create_cookie_id($applicant_id);
-      $this->session->set_userdata('app_cookie_id', $random_number);
 
+      $this->session->set_userdata('applicant', $record);
       redirect('hibah/new_record');
     } else {
       $data = $this->prepare_new_applicant();
@@ -65,32 +59,25 @@ class Hibah extends CI_Controller {
   }
 
   public function new_group(){
-    if($this->get_applicant_status() !== 'applicant_created'){
+    if($this->get_applicant_status() !== 'applicant_created')
       return $this->new_record();
-    }
 
     $data = $this->prepare_new_group();
     $this->load->view('group/new', $data);
   }
 
   public function create_group(){
-    if($this->get_applicant_status() !== 'applicant_created'){
+    if($this->get_applicant_status() !== 'applicant_created')
       return $this->new_record();
-    }
+
     $this->group_form_validation();
 
     if ($this->form_validation->run() === TRUE){
       $record = array();
-      foreach(get_object_vars($this->group_model) as $k => $_){
+      foreach(get_object_vars($this->group_model) as $k => $_)
         $record[$k] = $this->input->post("group[$k]");
-      }
-      // TODO: Save it in session first, only save in database when all of the record finished.
-      $applicant_id = $this->applicant_cookie_model->get_applicant_id($this->session->userdata('app_cookie_id'));
 
-      $record['applicant_id'] = $applicant_id;
-      $group_id = $this->group_model->insert($record);
-
-      $this->applicant_model->update_group_id($applicant_id, $group_id); 
+      $this->session->set_userdata('group', $record);
       redirect('hibah/new_record');
     } else {
       $data = $this->prepare_new_group();
@@ -99,33 +86,33 @@ class Hibah extends CI_Controller {
   }
 
   private function new_proposal(){
-    if($this->get_applicant_status() !== 'group_created'){
+    if($this->get_applicant_status() !== 'group_created')
       return $this->new_record();
-    }
 
     $data = $this->prepare_new_proposal();
     $this->load->view('proposal/new', $data);
   }
 
   public function create_proposal(){
-    if($this->get_applicant_status() !== 'group_created'){
+    if($this->get_applicant_status() !== 'group_created')
       return $this->new_record();
-    }
 
     $this->proposal_form_validation();
 
     if ($this->form_validation->run() === TRUE){
       $record = array();
-      foreach(get_object_vars($this->proposal_model) as $k => $_){
+
+      foreach(get_object_vars($this->proposal_model) as $k => $_)
         $record[$k] = $this->input->post("proposal[$k]");
-      }
-      $record['approved'] = PROPOSAL_UNPROCESSED;
+
       $upload_data = $this->upload->data();
       $record['file_link'] = $upload_data['full_path'];
-      $record['applicant_id'] = $this->applicant_cookie_model->get_applicant_id($this->session->userdata('app_cookie_id'));
+      $record['approved'] = PROPOSAL_UNPROCESSED;
 
-      $this->proposal_model->insert($record);
-      $this->session->sess_destroy();
+      $this->session->set_userdata('proposal', $record);
+
+      $this->process_new_hibah();
+
       $this->registration_success();
     } else {
       $data = $this->prepare_new_proposal();
@@ -137,6 +124,12 @@ class Hibah extends CI_Controller {
     $this->load->view('hibah/success_page.php');
   }
 
+  public function destroy_session(){
+    $this->session->sess_destroy();
+  }
+
+/* =============== INITIALIZER =============== */
+
   private function init_lib_and_helper(){
     $this->load->helper('url_helper');
     $this->load->helper('form');
@@ -146,13 +139,12 @@ class Hibah extends CI_Controller {
   }
 
   private function init_model(){
-    // i think we no need this anymore
-    $this->load->model('applicant_cookie_model');
-
     $this->load->model('applicant_model');
     $this->load->model('applicant_group_model', 'group_model');
     $this->load->model('proposal_model');
   }
+
+/* =============== FORM VALIDATOR =============== */
 
   private function applicant_form_validation(){
     $this->form_validation->set_rules('applicant[nik]', 'NIK', 'required|integer|is_unique[applicant.nik]');
@@ -193,48 +185,8 @@ class Hibah extends CI_Controller {
     $this->form_validation->set_message('min_length', "{field} harus berisi minimal {param} karakter.");
   }
 
-  private function get_applicant_from_session_id(){
-    $cookie_id = $this->session->userdata('app_cookie_id');
-    $applicant_id = $this->applicant_cookie_model->get_applicant_id($cookie_id);
-    return $this->applicant_model->find($applicant_id);
-  }
 
-  private function get_applicant_status(){
-     $applicant = $this->get_applicant_from_session_id();
-     if(empty($applicant)){
-       return 'completely_new';
-     } else {
-       $group = $this->group_model->find_by_applicant_id($applicant->id);
-       if(empty($group)){
-         return 'applicant_created';
-       } else {
-         $proposal = $this->proposal_model->find_by_applicant_id($applicant->id);
-         if(empty($proposal)){
-           return 'group_created';
-         } else {
-           return 'proposal_created';
-         }
-       }
-     }
-  }
-
-  private function prepare_new_applicant(){
-    $data['positions'] = $this->applicant_model->get_applicant_positions();
-    return $data;
-  }
-
-  private function prepare_new_group(){
-    $data['applicant'] = $this->get_applicant_from_session_id();
-    $data['part_ofes'] = $this->group_model->get_part_ofes();
-    $data['activities'] = $this->group_model->get_activities();
-    return $data;
-  }
-
-  private function prepare_new_proposal(){
-    $data['applicant'] = $this->get_applicant_from_session_id();
-    $data['group'] = $this->group_model->find_by_applicant_id($data['applicant']->id);
-    return $data;
-  }
+/* =============== CUSTOM FORM VALIDATOR CALLBACK =============== */
 
   function check_date_format($date){
     // TODO: NOT YET IMPLEMENTED
@@ -257,7 +209,79 @@ class Hibah extends CI_Controller {
     return FALSE;
   }
 
-  function do_upload_needs()
+  function agreed_tnc($str){
+    if($str == 1){
+      return TRUE;
+    } else {
+      $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
+      return FALSE;
+    }
+  }
+
+/* =============== UTILITY  =============== */
+
+  private function process_new_hibah(){
+    // IMPORTANT: This method is not handling race condition case, yet.
+    $applicant = $this->session->userdata('applicant');
+    $group     = $this->session->userdata('group');
+    $proposal  = $this->session->userdata('proposal');
+
+    var_dump($applicant);
+    var_dump($group);
+    var_dump($proposal);
+
+    $applicant_id = $this->applicant_model->insert($applicant);
+
+    $group['applicant_id'] = $applicant_id;
+    $group_id = $this->group_model->insert($group);
+
+    $this->applicant_model->update_group_id($applicant_id, $group_id); 
+
+    $proposal['applicant_id'] = $applicant_id;
+    $this->proposal_model->insert($proposal);
+
+    $this->session->sess_destroy();
+    $this->session->set_userdata('applicant_id', $applicant_id);
+  }
+
+  private function get_applicant_status(){
+     $applicant = $this->session->userdata('applicant');
+     if(empty($applicant)){
+       return 'completely_new';
+     } else {
+       $group = $this->session->userdata('group');
+       if(empty($group)){
+         return 'applicant_created';
+       } else {
+         $proposal = $this->session->userdata('proposal');
+         if(empty($proposal)){
+           return 'group_created';
+         } else {
+           return 'proposal_created';
+         }
+       }
+     }
+  }
+
+  private function prepare_new_applicant(){
+    $data['positions'] = $this->applicant_model->get_applicant_positions();
+    return $data;
+  }
+
+  private function prepare_new_group(){
+    $data['applicant'] = $this->session->userdata('applicant');
+    $data['part_ofes'] = $this->group_model->get_part_ofes();
+    $data['activities'] = $this->group_model->get_activities();
+    return $data;
+  }
+
+  private function prepare_new_proposal(){
+    $data['applicant'] = $this->session->userdata('applicant');
+    $data['group'] = $this->session->userdata('group');
+    return $data;
+  }
+
+  private function do_upload_needs()
   {
     // TODO: later, the directory will be encrypted
     $config['upload_path'] = './uploads/';
@@ -274,15 +298,6 @@ class Hibah extends CI_Controller {
       return FALSE;
     else
       return TRUE;
-  }
-
-  public function agreed_tnc($str){
-    if($str == 1){
-      return TRUE;
-    } else {
-      $this->form_validation->set_message('agreed_tnc', "Untuk melanjutkan anda harus menyetujui {field}");
-      return FALSE;
-    }
   }
 }
 
